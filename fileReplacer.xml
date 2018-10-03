@@ -1,0 +1,79 @@
+<?xml version = "1.0"?>
+<project default="init" name="Jar File Replacer">
+	<property name="sourceFolder" value="F:\work_area\dummyFolder\source\"/>
+	<property name="destinationFolder" value="F:\work_area\dummyFolder\destination\"/>
+	<property name="fileName" value="myFile.txt"/>
+	
+	
+	<tstamp>
+		<format pattern="yyyy-MM-dd_HH-mm-ss" property="time.stamp"/>
+	</tstamp>
+	
+	<target name="init">
+
+		<antcall target="stopService">
+			<param name="serviceName" value="Cisco AnyConnect Secure Mobility Agent"/>
+		</antcall>
+
+		<antcall target="sleep"> <param name = "millisecondsToWait" value ="3000"></param></antcall>
+		<!-- Copy and Backup file-->
+		<antcall target="backupAndCopyFile">
+			<param name="fileNameWithExtension" value="${fileName}"/>
+			<param name="sourceLocation" value="${sourceFolder}"/>
+			<param name="destinationLocation" value="${destinationFolder}"/>
+		</antcall>
+		<!-- Copy and Backup another file-->
+		<antcall target="startService">
+			<param name="serviceName" value="Cisco AnyConnect Secure Mobility Agent"/>
+		</antcall>
+
+
+		<antcall target="sleep"> <param name = "millisecondsToWait" value ="3000"></param></antcall>
+
+
+		<antcall target="testRestAPI">
+			
+		</antcall>
+	</target>
+
+
+
+	<!--antcall:  backupAndCopyFile(fileNameWithExtension, sourceLocation, destinationLocation) -->
+	<target name="backupAndCopyFile">
+		<echo>Backing up file</echo>
+		<move file="${destinationLocation}${fileNameWithExtension}" toFile="${destinationLocation}${fileNameWithExtension}_${time.stamp}"/>
+		<echo>Copying file</echo>
+		<copy file="${sourceLocation}${fileNameWithExtension}" overwrite="false" todir="${destinationLocation}"/>
+	</target>
+
+
+<!--antcall:  sleep(millisecondsToWait) -->
+<target name ="sleep">
+	<echo> waiting for ${millisecondsToWait} miliseconds </echo>
+	<sleep milliseconds="${millisecondsToWait}"/>
+</target>
+
+	<target name="startService">
+		<echo> Staring server ${serviceName}...... </echo>
+		<exec executable="net" vmlauncher="false">
+			<arg value="start"/>
+			<arg value="${serviceName}"/>
+		</exec>
+	</target>
+
+	<target name="stopService">
+		<echo> Stopping server ${serviceName}...... </echo>
+		<exec executable="net" vmlauncher="false">
+			<arg value="stop"/>
+			<arg value="${serviceName}"/>
+		</exec>
+	</target>
+
+<target name="testRestAPI">
+	<echo> executing api call</echo>
+    <exec executable="curl">
+    	<arg line="-i https://reqres.in/api/u"/>
+    </exec>
+</target>
+</project>
+
