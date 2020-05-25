@@ -22,7 +22,7 @@
 			<param name="sourceLocation" value="${sourceFolder}"/>
 			<param name="destinationLocation" value="${destinationFolder}"/>
 		</antcall>
-		<!-- Copy and Backup another file-->
+		<!-- Copy and Backup another file.  Replace service name -->
 		<antcall target="startService">
 			<param name="serviceName" value="Cisco AnyConnect Secure Mobility Agent"/>
 		</antcall>
